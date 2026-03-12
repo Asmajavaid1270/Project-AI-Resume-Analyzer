@@ -224,9 +224,13 @@ Resume:
 async def chat(request: ChatRequest):
     last_message = request.messages[-1].content
     if request.cv_text:
-        system_prompt = f"""You are a helpful resume advisor.
+        system_prompt = f"""You are a helpful career advisor.
 Resume: {request.cv_text}
 RULES:
+- Talk directly TO the user in second person (you/your)
+- Never refer to the user in third person
+- Say 'your resume' not 'the candidate's resume'
+- Always use 'you' and 'your' when giving advice
 - Answer based on THIS resume only
 - Give clean bullet points
 - Maximum 5 bullet points
@@ -237,7 +241,7 @@ RULES:
 [Q2]: Question 2?
 [Q3]: Question 3?"""
     else:
-        system_prompt = "You are a helpful resume advisor."
+        system_prompt = "You are a helpful career advisor. Talk directly to the user using 'you' and 'your'."
     async with httpx.AsyncClient() as client:
         response = await client.post(
             "https://api.groq.com/openai/v1/chat/completions",
