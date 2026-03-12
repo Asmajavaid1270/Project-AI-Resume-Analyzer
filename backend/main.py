@@ -26,7 +26,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-GROQ_API_KEY = "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"
+import os
+from dotenv import load_dotenv
+load_dotenv()
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 security = HTTPBearer(auto_error=False)
 
 class Message(BaseModel):
