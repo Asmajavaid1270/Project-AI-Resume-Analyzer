@@ -670,7 +670,7 @@ export default function App() {
           {/* Footer */}
           <div style={{ textAlign: "center", marginTop: "40px", padding: "20px", borderTop: "1px solid #ffffff11" }}>
             <p style={{ color: "#333", fontSize: "0.85rem" }}>
-              Made with  by <span style={{ color: "#00ff88", fontWeight: "bold" }}>Asma Javaid</span>
+              Made   by <span style={{ color: "#00ff88", fontWeight: "bold" }}>Asma Javaid</span>
             </p>
           </div>
 
