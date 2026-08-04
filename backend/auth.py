@@ -4,13 +4,18 @@ from passlib.context import CryptContext
 from jose import JWTError, jwt
 from datetime import datetime, timedelta
 from typing import Optional
+import os
+from dotenv import load_dotenv
 
-DATABASE_URL = "sqlite:///./users.db"
-engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
+load_dotenv()
+
+DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./users.db")
+
+engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
 
-SECRET_KEY = "your-secret-key-keep-it-safe-123456"
+SECRET_KEY = os.getenv("SECRET_KEY", "your-secret-key-keep-it-safe-123456")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 * 24
 

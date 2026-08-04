@@ -1,6 +1,6 @@
 from fastapi import FastAPI, UploadFile, File, Form, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse
+from fastapi.responses import Response
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from pydantic import BaseModel
 from typing import List, Optional
@@ -8,7 +8,6 @@ import httpx
 import PyPDF2
 import io
 import re
-import tempfile
 import os
 from reportlab.lib.pagesizes import letter
 from reportlab.lib import colors
@@ -307,8 +306,8 @@ Match Percentage: [X]%
 
 @app.post("/download-report")
 async def download_report(request: ReportRequest):
-    tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
-    doc = SimpleDocTemplate(tmp.name, pagesize=letter)
+    buffer = io.BytesIO()
+    doc = SimpleDocTemplate(buffer, pagesize=letter)
     styles = getSampleStyleSheet()
     story = []
     title_style = ParagraphStyle('title', fontSize=24, textColor=colors.HexColor('#007744'), spaceAfter=20, fontName='Helvetica-Bold')
@@ -326,4 +325,9 @@ async def download_report(request: ReportRequest):
                 clean = line.replace('**', '').strip()
                 story.append(Paragraph(clean, body_style))
     doc.build(story)
-    return FileResponse(tmp.name, media_type='application/pdf', filename='resume_report.pdf')
+    buffer.seek(0)
+    return Response(
+        content=buffer.getvalue(),
+        media_type='application/pdf',
+        headers={"Content-Disposition": "attachment; filename=resume_report.pdf"}
+    )

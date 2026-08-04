@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+const API_URL = import.meta.env.VITE_API_URL || "https://project-ai-resume-analyzer-production.up.railway.app";
+
 function Bubble({ style }) {
   return <div style={{
     position: "fixed", borderRadius: "50%", opacity: 0.12,
@@ -275,14 +277,14 @@ export default function App() {
     formData.append("field", field);
     formData.append("job_role", jobRole);
     try {
-      const res = await fetch("https://project-ai-resume-analyzer-production.up.railway.app/analyze", { method: "POST", body: formData });
+      const res = await fetch(`${API_URL}/analyze`, { method: "POST", body: formData });
       if (!res.ok) throw new Error("Server error");
       const data = await res.json();
       setAnalysis(data.analysis);
       setCvText(data.cv_text || "");
       setCvScore(data.score || null);
       if (token && data.score) {
-        await fetch("https://project-ai-resume-analyzer-production.up.railway.app/save-history", {
+        await fetch(`${API_URL}/save-history`, {
           method: "POST",
           headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
           body: JSON.stringify({ field, job_role: jobRole, score: data.score, analysis: data.analysis })
@@ -315,7 +317,7 @@ export default function App() {
     setInput("");
     setChatLoading(true);
     try {
-      const res = await fetch("https://project-ai-resume-analyzer-production.up.railway.app/chat", {
+      const res = await fetch(`${API_URL}/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: updatedMessages, cv_text: cvText }),
@@ -332,7 +334,7 @@ export default function App() {
     if (!cvText || !jobDesc.trim()) return;
     setMatchLoading(true); setMatchResult(null);
     try {
-      const res = await fetch("https://project-ai-resume-analyzer-production.up.railway.app/match", {
+      const res = await fetch(`${API_URL}/match`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ cv_text: cvText, job_description: jobDesc }),
@@ -348,7 +350,7 @@ export default function App() {
   const handleDownloadReport = async () => {
     if (!analysis || !cvScore) return;
     try {
-      const res = await fetch("https://project-ai-resume-analyzer-production.up.railway.app/download-report", {
+      const res = await fetch(`${API_URL}/download-report`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ analysis, score: cvScore, field, job_role: jobRole }),
@@ -362,7 +364,7 @@ export default function App() {
   const handleAuth = async () => {
     setAuthLoading(true); setAuthError("");
     try {
-      const url = authMode === "login" ? "https://project-ai-resume-analyzer-production.up.railway.app/login" : "https://project-ai-resume-analyzer-production.up.railway.app/register";
+      const url = authMode === "login" ? `${API_URL}/login` : `${API_URL}/register`;
       const body = authMode === "login"
         ? { email: authForm.email, password: authForm.password }
         : { username: authForm.username, email: authForm.email, password: authForm.password };
@@ -378,7 +380,7 @@ export default function App() {
   const handleGetHistory = async () => {
     if (!token) return;
     try {
-      const res = await fetch("https://project-ai-resume-analyzer-production.up.railway.app/history", { headers: { "Authorization": `Bearer ${token}` } });
+      const res = await fetch(`${API_URL}/history`, { headers: { "Authorization": `Bearer ${token}` } });
       const data = await res.json();
       setHistory(data.history || []); setShowHistory(true);
     } catch (err) { console.log(err); }
